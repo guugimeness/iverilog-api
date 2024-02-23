@@ -1,23 +1,20 @@
-# Judge-API
+# Iverilog-API
 
-### Desenvolvimento
-API que realiza testes e "julga" códigos Verilog.
-Para tal objetivo, foi utilizado Flask e o compilador Icarus.
+### Development
+API that performs tests and "judges" Verilog codes. 
+For this purpose, Flask and the Icarus compiler were used.
 
-### Ambiente virtual
-Para garantir o funcionamento da API, é importante criar um ambiente virtual dentro desse diretório. ([Tutorial de como criar e rodar um venv](https://www.treinaweb.com.br/blog/criando-ambientes-virtuais-para-projetos-python-com-o-virtualenv))
+### Virtual environment
+To ensure the API works, it's important to create a virtual environment within this directory. ([How to create and run a venv](https://www.treinaweb.com.br/blog/criando-ambientes-virtuais-para-projetos-python-com-o-virtualenv))
 
-Após isso, ative o ambiente e instale as dependências necessárias utilizando `pip install -r requirements.txt`.
-
-Se alguma nova dependência for instalada, é preciso atualizar o requirements.txt com `pip freeze > requirements.txt`.
+After that, activate the environment and install the necessary dependencies using `pip install -r requirements.txt`.
 
 ### Icarus Verilog
-Para que a API funcione, é preciso ter instalado o compilador de Verilog, Icarus.
+For the API to work, you must have the Verilog compiler, Icarus, installed.
 ```
 sudo apt-get install iverilog
 ```
 
-### Como testar
-Com as dependências e o compilador instalados, execute o código, iniciando a API.
-Utilizando o VScode, a API é aberta em uma porta do localhost. Após isso, acesse a rota '/test' e já será possível receber uma resposta.
-Ps: para testar é preciso adicionar o código Verilog e seu respectivo test bench no diretório. É importante também se atentar ao nome dos arquivos.
+### How to test
+With the dependencies and compiler installed, run the code, starting the API. Using VScode, the API is opened on a localhost port. After that, access the '/test' route and you will be able to receive a response. 
+Ps: to test you need to add the Verilog code and its respective test bench to the directory. It is also important to pay attention to the name of the files.
