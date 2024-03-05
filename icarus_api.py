@@ -1,5 +1,6 @@
 import subprocess
-from flask import Flask, jsonify
+import os
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -9,31 +10,59 @@ def home():
 
 @app.route('/test')
 def simTest():
-
-    nome_arq = 'design.v' # Vai ser passado pela API principal
-    testbench = 'design_tb.v' # A ideia seria ter vários casos de teste
+    
+    log, dumpfile = '', ''
+    tests_passed = False
+    response = 'Algum teste falhou!'
+    
+    data = request.get_json()
+    
+    # Criando o arquivo .v
+    with open('code.v', 'w') as arquivo:
+        arquivo.write(data['verilog_code'])
+    
+    id_exer = data['exercise_id']
+    testbench = f'{id_exer}_tb.v' # A ideia seria ter vários casos de teste
     
     # Comandos para compilação e execução do código fornecido pelo usuário
-    comando_compilar = f"iverilog -o compilation.vvp {nome_arq}"
-    comando_executar = "vvp compilation.vvp"
+    command_comp = f"iverilog -o compilation.vvp code.v"
+    command_exec = "vvp compilation.vvp"
     
     # Comandos para compilação e execução do teste bench
-    comando_test = f"iverilog -o test.vvp {testbench}"
-    comando_executarT = "vvp test.vvp"
+    command_test = f"iverilog -o test.vvp {testbench}"
+    command_exec_tb = "vvp -l test.out test.vvp"
     
     # Compilando o código do usuário
-    resposta_compilar = subprocess.run(comando_compilar, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    
-    if resposta_compilar.returncode == 0: # Caso o código compile, prosegue-se para a execução e testes
-        resposta_executar = subprocess.run(comando_executar, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    code_comp = subprocess.run(command_comp, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    code_exec = subprocess.run(command_exec, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         
-        # Compilando e executando o teste bench
-        subprocess.run(comando_test, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        subprocess.run(comando_executarT, shell=True, text=True)
-        
-        if resposta_executar.returncode == 0:
-            return jsonify({'status': 'OK', 'saida': resposta_executar.stdout})
+    # Compilando e executando o teste bench
+    test_comp = subprocess.run(command_test, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    test_exec = subprocess.run(command_exec_tb, shell=True, text=True)
+    err = test_comp.stderr
+
+    if test_comp.returncode == 0:
+        tests_passed = True
+        response = 'Todos os testes passaram!'
+        with open('test.out', 'r') as arquivo:
+            log = arquivo.read()
+        with open('dump.vcd', 'r') as arquivo:
+            dumpfile = arquivo.read()
     
-    return jsonify({'status': 'Erro', 'saida': resposta_compilar.stderr})
+    # Excluindo os arquivos de teste
+    try:
+        os.remove('code.v')
+        os.remove('compilation.vvp')
+        os.remove('test.vvp')
+        os.remove('test.out')
+        os.remove('dump.vcd')
+    except FileNotFoundError:
+        pass
+        
+    return jsonify({"message": response, 
+                    "tests_passed": tests_passed, 
+                    "compilation_log": log, 
+                    "dump": dumpfile,
+                    "error": err, })
 
 app.run()
