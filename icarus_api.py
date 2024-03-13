@@ -1,12 +1,18 @@
 import subprocess
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     return 'API online!'
+
+@app.before_request
+def validate_request():
+    data = request.get_json()
+    if not data:
+        abort(400)
 
 @app.route('/test')
 def simTest():
