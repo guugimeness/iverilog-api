@@ -100,7 +100,7 @@ GitHub.sublime-settings
 .history
 
 # Tests
-*test*
-*.v
+
 *.vvp
 *.vcd
+a.out
