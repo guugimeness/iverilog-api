@@ -16,17 +16,17 @@ sudo apt-get install iverilog
 ```
 
 ### How to test
-With the dependencies and compiler installed, run the code, starting the API. Using VScode, the API is opened on a localhost port. After that, it's possible to make a request to the '/test' route, passing as a parameter a json that follows the model below.
+With the dependencies and compiler installed, run the code, starting the API. Using VScode, the API is opened on a localhost port. After that, it's possible to make a request to the '/test_verilog' route, passing as a parameter a json that follows the model below.
 ```
 data = {
   "verilog_code": "Verilog code to test",
   "user_id": "user identifier",
   "exercise_id": "exercise identifier"
+  "testbench_id": "test bench identifier"
 }
 
-response = requests.get('http://127.0.0.1:5000/test', json=data)
+response = requests.get('http://127.0.0.1:5000/test_verilog', json=data)
 ```
-Ps: The test bench is named by "exercise_id". For example, the exercise with id 1 will be tested by "1_tb.v"
 
 ### Response
 By default, the API returns json containing the following information:
@@ -36,6 +36,6 @@ By default, the API returns json containing the following information:
   "dump": "wave file generated on the test bench",
   "error_log": "error message, if any",
   "message": "informs whether the tests passed or not",
-  "tests_passed": "true or false, whether the tests passed"
+  "tests_passed": "true or false, whether the test passed"
 }
 ```
